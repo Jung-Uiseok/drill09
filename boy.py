@@ -77,10 +77,10 @@ class Sleep:
     @staticmethod
     def draw(boy):
         if boy.action == 2:
-            boy.image.clip_composite_draw(boy.frame * 100, boy.action * 100, 200, 100, 100, math.pi / 2, '', boy.x + 25,
+            boy.image.clip_composite_draw(boy.frame * 100, boy.action * 100, 100, 100, math.pi * 1.5, '', boy.x + 25,
                                           boy.y - 25, 100, 100)
         else:
-           boy.image.clip_composite_draw(boy.frame * 100, boy.action * 100, 300, 100, 100, math.pi / 2, '', boy.x - 25,
+            boy.image.clip_composite_draw(boy.frame * 100, boy.action * 100, 100, 100, math.pi / 2, '', boy.x - 25,
                                           boy.y - 25, 100, 100)
 
 
@@ -113,8 +113,8 @@ class StateMachine:
         self.cur_state = Idle
         self.table = {
             Sleep: {right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle},
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep},
-            Run: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle}
+            Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, time_out: Sleep},
+            Run: {right_down: Run, left_down: Run, right_up: Idle, left_up: Idle, space_down: Idle}
         }
 
     def handle_event(self, e):
