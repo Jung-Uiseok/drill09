@@ -101,9 +101,9 @@ class Run:
 
     @staticmethod
     def enter(boy, e):
-        if right_down(e) or left_up(e):
+        if right_down(e) or right_up(e):
             boy.dir, boy.action = 1, 1
-        elif left_down(e) or right_up(e):
+        elif left_down(e) or left_up(e):
             boy.dir, boy.action = -1, 0
 
     @staticmethod
@@ -119,15 +119,18 @@ class AutoRun:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 5
+        boy.x += boy.dir * 20
+        if get_time() - boy.start_time > 4:
+            boy.state_machine.handle_event(('TIME_OUT', 0))
         pass
 
     @staticmethod
     def enter(boy, e):
-        if right_down(e) or left_up(e):
-            boy.dir, boy.action = 1, 1
-        elif left_down(e) or right_up(e):
-            boy.dir, boy.action = -1, 0
+        if boy.dir == 1:
+            boy.action = 1
+        elif boy.dir == -1:
+            boy.action = 0
+        boy.start_time = get_time()
 
     @staticmethod
     def exit(boy, e):
@@ -135,7 +138,13 @@ class AutoRun:
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y, 200, 200)
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y + 35, 200, 200)
+        if boy.x > 800:
+            boy.dir = -1
+            boy.action = 0
+        elif boy.x < 0:
+            boy.dir = 1
+            boy.action = 1
 
 
 class StateMachine:
@@ -145,7 +154,7 @@ class StateMachine:
         self.table = {
             Sleep: {right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle, a_down: Idle, space_down: Idle},
             Idle: {right_down: Run, left_down: Run, left_up: Idle, right_up: Idle, a_down: AutoRun, a_up: AutoRun, time_out: Sleep},
-            Run: {right_down: Run, left_down: Run, right_up: Idle, left_up: Idle, space_down: Idle},
+            Run: {right_down: Run, left_down: Run, right_up: Idle, left_up: Idle, a_down: AutoRun, a_up: AutoRun, space_down: Idle},
             AutoRun: {left_down: Run, left_up: Idle, right_down: Run, right_up: Idle, time_out: Idle}
         }
 
